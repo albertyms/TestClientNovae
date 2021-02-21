@@ -2,7 +2,6 @@ package com.client.novae.util;
 
 import com.client.novae.request.CreditCardRequest;
 import com.client.novae.response.CreditCardResponse;
-import com.fasterxml.jackson.databind.util.JSONPObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
@@ -19,10 +18,10 @@ import javax.ws.rs.core.Response;
 public class ClientWebServiceUtil {
     private Logger logger = LogManager.getLogger(ClientWebServiceUtil.class);
 
-    public String ClientWebServiceGetPath(String url, Long param) {
+    public String clientWebServiceGetPath(String url, Object param) {
         try {
             Client client = ClientBuilder.newClient();
-            return client.target(url).path(String.valueOf(param))
+            return client.target(url).path(param instanceof Long ? String.valueOf((Long) param) : (String) param)
                     .request(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON)
                     .get(String.class);
@@ -32,7 +31,7 @@ public class ClientWebServiceUtil {
         }
     }
 
-    public String ClientWebServiceGetList(String url) {
+    public String clientWebServiceGetList(String url) {
         try {
             Client client = ClientBuilder.newClient();
             return client.target(url)
@@ -45,7 +44,7 @@ public class ClientWebServiceUtil {
         }
     }
 
-    public Response ClientWebServicePost(String url, CreditCardRequest object) {
+    public Response clientWebServicePost(String url, CreditCardRequest object) {
         try {
             Client client = ClientBuilder.newClient();
             return client.target(url).request(MediaType.APPLICATION_JSON)
@@ -56,7 +55,7 @@ public class ClientWebServiceUtil {
         }
     }
 
-    public Response ClientWebServicePut(String url, Long id, CreditCardRequest request) {
+    public Response clientWebServicePut(String url, Long id, CreditCardRequest request) {
         try {
             Client client = ClientBuilder.newClient();
             return client.target(url).path(String.valueOf(id))
@@ -68,7 +67,7 @@ public class ClientWebServiceUtil {
         }
     }
 
-    public Response ClientWebServiceDelete(String url, Long id) {
+    public Response clientWebServiceDelete(String url, Long id) {
         try {
             Client client = ClientBuilder.newClient();
             WebTarget baseTarget = client.target(url);

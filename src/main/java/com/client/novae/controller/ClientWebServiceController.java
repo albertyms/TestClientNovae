@@ -4,20 +4,18 @@ import com.client.novae.request.CreditCardRequest;
 import com.client.novae.response.CreditCardResponse;
 import com.client.novae.util.ClientUrlEnum;
 import com.client.novae.util.ClientWebServiceUtil;
-import com.fasterxml.jackson.core.util.InternCache;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.ws.rs.core.Response;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,13 +26,16 @@ import java.util.Optional;
 public class ClientWebServiceController {
     private Logger logger = LogManager.getLogger(ClientWebServiceUtil.class);
 
+    @Value("${url.service.novae}")
+    private String URL_IP;
+
     @Autowired
     ClientWebServiceUtil clientWebUtil;
 
     @PostMapping
     public ResponseEntity<CreditCardResponse> create(@Validated @RequestBody CreditCardRequest request) {
         try {
-            String responseStr = clientWebUtil.ClientWebServicePost(ClientUrlEnum.URL_IP.getValue(), request).readEntity(String.class);
+            String responseStr = clientWebUtil.clientWebServicePost(URL_IP, request).readEntity(String.class);
             CreditCardResponse response = clientWebUtil.transformStrToJson(responseStr);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -45,7 +46,7 @@ public class ClientWebServiceController {
 
     @GetMapping
     public ResponseEntity<Iterable<CreditCardResponse>> findAll() {
-        String responseStr = clientWebUtil.ClientWebServiceGetList(ClientUrlEnum.URL_IP.getValue());
+        String responseStr = clientWebUtil.clientWebServiceGetList(URL_IP);
         JSONArray responseJson = new JSONArray(responseStr);
         List<CreditCardResponse> responseList = new ArrayList<>();
         responseJson.forEach(item -> {
@@ -66,7 +67,7 @@ public class ClientWebServiceController {
     @GetMapping("/{id}")
     public ResponseEntity<CreditCardResponse> findById(@PathVariable Long id) {
         try {
-            String responseStr = clientWebUtil.ClientWebServiceGetPath(ClientUrlEnum.URL_IP.getValue(), id);
+            String responseStr = clientWebUtil.clientWebServiceGetPath(URL_IP, id);
             if (responseStr != null) {
                 CreditCardResponse response = clientWebUtil.transformStrToJson(responseStr);
                 return ResponseEntity.ok(response);
@@ -82,7 +83,7 @@ public class ClientWebServiceController {
     @PutMapping("/update/{id}")
     public ResponseEntity<CreditCardResponse> update(@PathVariable Long id, @Validated @RequestBody CreditCardRequest request) {
         try {
-            String responseStr = clientWebUtil.ClientWebServicePut(ClientUrlEnum.URL_IP.getValue() + ClientUrlEnum.UPDATE_CARD.getValue(), id, request).readEntity(String.class);
+            String responseStr = clientWebUtil.clientWebServicePut(URL_IP + ClientUrlEnum.UPDATE_CARD.getValue(), id, request).readEntity(String.class);
             CreditCardResponse response = clientWebUtil.transformStrToJson(responseStr);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -94,8 +95,20 @@ public class ClientWebServiceController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Long> delete(@PathVariable Long id) {
         try {
-            String responseStr = clientWebUtil.ClientWebServiceDelete(ClientUrlEnum.URL_IP.getValue() + ClientUrlEnum.DELETE_CARD.getValue(), id).readEntity(String.class);
+            String responseStr = clientWebUtil.clientWebServiceDelete(URL_IP + ClientUrlEnum.DELETE_CARD.getValue(), id).readEntity(String.class);
             return ResponseEntity.ok(Long.parseLong(responseStr));
+        } catch (Exception e) {
+            logger.error("Error:", e);
+            return null;
+        }
+    }
+
+    @GetMapping("/getCard/{cardNumber}")
+    public ResponseEntity<CreditCardResponse> findByNumber(@PathVariable("cardNumber") String cardNumber) {
+        try {
+            String responseStr = clientWebUtil.clientWebServiceGetPath(URL_IP + ClientUrlEnum.GET_CARD_BY_NUMBER.getValue(), cardNumber);
+            CreditCardResponse response = clientWebUtil.transformStrToJson(responseStr);
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             logger.error("Error:", e);
             return null;
