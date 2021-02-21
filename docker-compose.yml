@@ -1,0 +1,8 @@
+version: '3.1'
+services:
+  app:
+    container_name: app-clientnovae
+    image: app-clientnovae
+    build: ./
+    ports:
+      - "8082:8082"
