@@ -11,18 +11,15 @@ With Docker:
         1.4. Run the postman collections
 
 With Springboot/Maven:
-    NOTE: To run with this option it is necessary to have a PostgreSQL database with a database called "testnovae"
-          and change the connection string to the database in the application.properties file so that the scripts 
-          can be executed table creation.
-        For project NovaeTest:
+        For project ClientNovae:
         Uncommet:
-          spring.datasource.url=jdbc:postgresql://localhost:5432/testnovae
+          url.service.novae=http://localhost:8081/api/creditCard
         Comment:
-          #spring.datasource.url=jdbc:postgresql://dbpostgresql:5432/testnovae
-    2.1. Move to the root folder of the project: cd C:\Users\user\NovaeTest\target on command line
-    2.2. Compile the project with the command: mvn clean install -Dmaven.test.skip=true
+          #url.service.novae=http://appTestNovae:8081/api/creditCard
+    2.1. Move to the root folder of the project: cd C:\Users\user\ClientNovae\target on command line
+    2.2. Compile the project with the command: mvn clean install
     2.3. Run the following command: mvn spring-boot:run
-    2.4. Repeat steps 2.1 to 2.4 for client web services ClientNovae
+    2.4. Repeat steps 2.1 to 2.4 for client web services NovaeTest (Review README.md of the project)
     
 For NovaeTest:
 
